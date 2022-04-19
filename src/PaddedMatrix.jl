@@ -1,0 +1,61 @@
+module PaddedMatrix
+
+import Base.show
+"""
+A Matrix, with one padding frame, with *fill_with* value
+
+```jldoctest
+core = [1 2; 3 4]
+padded = Padded(mcore, 0)
+padded.m
+
+4×4 Matrix{Int64}:
+ 0  0  0  0
+ 0  1  2  0
+ 0  3  4  0
+ 0  0  0  0
+
+```
+"""
+struct Padded{T}
+    m::Matrix{T}
+    padding::Int
+    function Padded(m::Matrix{T}; fill_with::T, padding_size::Integer=1) where {T}
+        if padding_size < 1
+            throw("Cannot create PaddedMatrix with padding smaller than 1!")
+        end
+        (rows, cols) = size(m)
+
+        default_cols = map(e -> fill_with, 1:cols+2*padding_size) |> transpose
+        default_rows = map(e -> fill_with, 1:rows)
+
+        padding_rows = default_rows
+        padding_cols = default_cols
+
+        for _ in 1:padding_size
+            padding_rows = vcat(padding_rows, default_rows)
+            padding_cols = hcat(padding_cols, default_cols)
+        end
+        padded = m
+        for _ in 1:padding_size
+            padded = hcat(default_rows, padded, default_rows)
+        end
+        for _ in 1:padding_size
+            padded = vcat(default_cols, padded, default_cols)
+        end
+
+        new{T}(padded, padding_size)
+    end
+end
+
+function Base.show(io::IO, m::Padded)
+    (rows, cols) = size(m.m)
+    print(io,
+        ("PaddedMatrix with core size $(rows - 2)x$(cols - 2)\n" *
+         "Padding width $(m.padding) and filled with $(m.m[1,1])\n" *
+         "Content: "))
+    Base.show(stdout, "text/plain", m.m)
+end
+
+export Padded
+end # module
