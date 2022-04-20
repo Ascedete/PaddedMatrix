@@ -48,6 +48,20 @@ struct Padded{T}
     end
 end
 
+"""
+Yield the unpadded core indicees from a Padded Matrix
+```julia-repl
+m = [1 2; 3 4]
+p = Padded(m; fill_with=0, padding_size=3)
+new = map(p.m[i, j],core_indicees(p))
+new == m
+```
+"""
+function core_indicees(m::Padded{T}) where {T}
+    (rows, columns) = size(m.m)
+    return ((i, j) for i in 1+m.padding:rows-m.padding, j in 1+m.padding:columns-m.padding)
+end
+
 function Base.show(io::IO, m::Padded)
     (rows, cols) = size(m.m)
     print(io,
@@ -57,5 +71,5 @@ function Base.show(io::IO, m::Padded)
     Base.show(stdout, "text/plain", m.m)
 end
 
-export Padded
+export Padded, core_indicees
 end # module

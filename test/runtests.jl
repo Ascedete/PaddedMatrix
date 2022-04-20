@@ -10,6 +10,15 @@ end
 
 @testset "Padding Width" begin
     m = [1 2; 3 4]
-    p = Padded(m, fill_with=0, padding_size=3)
+    p = Padded(m; fill_with=0, padding_size=3)
     @test size(p.m) == (8, 8)
+end
+
+@testset "Core Positions" begin
+    m = [1 2; 3 4]
+    p = Padded(m; fill_with=0, padding_size=3)
+    new = map(core_indicees(p)) do (i, j)
+        p.m[i, j]
+    end
+    @test m == new
 end
