@@ -20,6 +20,25 @@ padded.m
 struct Padded{T}
     m::Matrix{T}
     padding::Int
+    function Padded(v::Vector{T}; fill_with::T, padding_size::Integer=1) where {T}
+        if padding_size < 1
+            throw("Cannot create PaddedMatrix with padding smaller than 1!")
+        end
+        (rows, cols) = (1, length(v))
+        default_cols = map(e -> fill_with, 1:cols+2*padding_size) |> transpose
+        default_rows = [fill_with]
+
+        padded = v'
+        for _ in 1:padding_size
+            padded = hcat(default_rows, padded, default_rows)
+        end
+        for _ in 1:padding_size
+            padded = vcat(default_cols, padded, default_cols)
+        end
+
+        new{T}(padded, padding_size)
+    end
+
     function Padded(m::Matrix{T}; fill_with::T, padding_size::Integer=1) where {T}
         if padding_size < 1
             throw("Cannot create PaddedMatrix with padding smaller than 1!")
@@ -29,13 +48,6 @@ struct Padded{T}
         default_cols = map(e -> fill_with, 1:cols+2*padding_size) |> transpose
         default_rows = map(e -> fill_with, 1:rows)
 
-        padding_rows = default_rows
-        padding_cols = default_cols
-
-        for _ in 1:padding_size
-            padding_rows = vcat(padding_rows, default_rows)
-            padding_cols = hcat(padding_cols, default_cols)
-        end
         padded = m
         for _ in 1:padding_size
             padded = hcat(default_rows, padded, default_rows)
@@ -47,6 +59,7 @@ struct Padded{T}
         new{T}(padded, padding_size)
     end
 end
+
 
 """
 Yield the unpadded core indicees from a Padded Matrix

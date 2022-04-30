@@ -8,6 +8,12 @@ using PaddedMatrix
     @test typeof(p) == Padded{Int}
 end
 
+@testset "Creation from Vector" begin
+    v = [1, 2, 3]
+    p = Padded(v, fill_with=0)
+    @test size(p.m) == (3, 5)
+end
+
 @testset "Padding Width" begin
     m = [1 2; 3 4]
     p = Padded(m; fill_with=0, padding_size=3)
