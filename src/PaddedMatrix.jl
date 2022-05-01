@@ -1,6 +1,6 @@
 module PaddedMatrix
 
-import Base.show
+import Base.show, Base.getindex
 """
 A Matrix, with one padding frame, with *fill_with* value
 
@@ -58,6 +58,10 @@ struct Padded{T}
 
         new{T}(padded, padding_size)
     end
+end
+
+function getindex(m::Padded{T}, inds...) where {T}
+    return m.m[inds...]
 end
 
 

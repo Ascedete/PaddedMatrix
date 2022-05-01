@@ -14,11 +14,19 @@ end
     @test size(p.m) == (3, 5)
 end
 
+@testset "Getindex" begin
+    m = [1 2; 3 4]
+    p = Padded(m; fill_with=0)
+    @test p[2, 2] == 1
+end
+
 @testset "Padding Width" begin
     m = [1 2; 3 4]
     p = Padded(m; fill_with=0, padding_size=3)
     @test size(p.m) == (8, 8)
 end
+
+
 
 @testset "Core Positions" begin
     m = [1 2; 3 4]
